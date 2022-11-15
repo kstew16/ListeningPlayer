@@ -1,0 +1,143 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainFrame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black_overlay"
+    tools:context=".VideoActivity" >
+
+    <!--
+         The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc.
+    -->
+
+
+    <!--
+         This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows.
+    -->
+	<VideoView
+        android:id="@+id/videoView"
+        android:layout_gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+	
+    <LinearLayout
+        android:id="@+id/subtitleLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:background="#00000000"
+        android:gravity="center|bottom"
+        android:orientation="vertical" >
+        <TextView
+            android:id="@+id/txtsubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|bottom"
+            android:textSize="24sp"
+            android:textColor="@color/white"
+            android:shadowColor="@color/black" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/extraLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top|right"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/txtExtra"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:shadowColor="@color/black"
+            android:textColor="#ffffff"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/goStopLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#33000000"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="visible" >
+
+        <Button
+            android:id="@+id/btnPre"
+            android:layout_width="120dp"
+            android:layout_height="190dp"
+            android:background="#99d9d9d9"
+            android:layout_marginRight="5dp"
+            android:textSize="35dp"
+            android:textColor="#ffffff"
+            android:text="prev"
+            android:visibility="visible"/>
+
+        <Button
+            android:id="@+id/btnFill"
+            android:layout_width="145dp"
+            android:layout_height="190dp"
+            android:background="#99333333"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
+            android:textSize="35dp"
+            android:textColor="#ffffff"
+            android:text="Fill Blank"
+            android:visibility="visible"/>
+
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="120dp"
+            android:layout_height="190dp"
+            android:background="#99d9d9d9"
+            android:layout_marginLeft="5dp"
+            android:textSize="35dp"
+            android:textColor="#ffffff"
+            android:text="next"
+            android:visibility="visible"/>
+    </LinearLayout>
+	
+    <TextView 
+        android:id="@+id/level"
+        android:text="level:Easy"
+        android:layout_gravity="left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#808080"
+        android:textSize="13dp"
+        android:layout_marginLeft="5dp" />    
+          
+	<LinearLayout
+            android:id="@+id/SettingMenu"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center" >
+  
+            <CheckBox
+                android:id="@+id/SubtileCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:text="Subtitle" />
+
+            <CheckBox
+                android:id="@+id/StudyModeCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:text="StudyMode" />
+            
+            <CheckBox
+                android:id="@+id/MeaningCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:text="Meaning" />
+      	</LinearLayout>
+</FrameLayout>

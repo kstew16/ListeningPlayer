@@ -1,0 +1,6 @@
+include ':lib3'
+include ':lib2'
+include ':lib'
+include ':lib'
+rootProject.name='My Application30'
+include ":app"
