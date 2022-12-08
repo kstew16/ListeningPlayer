@@ -20,6 +20,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -32,6 +33,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,6 +67,8 @@ public class MainActivity<dbManager> extends Activity
 {
 
 	public static DBManager dbManager;
+	public static String addr = "192.168.0.4";
+	public static int pNum = 3030;
 	public static MyClient serverManager;
 
 
@@ -93,7 +98,12 @@ public class MainActivity<dbManager> extends Activity
 	private ImageButton mBackButton2;
 	private Button mRefreshButton;
 	private Button mRequestFileButton;
-	private EditText mFileNameText;
+	//private EditText mFileNameText;
+	private Spinner mFileList;
+	private ArrayList<String> itemList = new ArrayList<String>();
+	SpinnerAdapter mFileListSpinnerAdapter;
+
+
 
 
 	String[][] urls = new String[10][20];
@@ -176,7 +186,7 @@ public class MainActivity<dbManager> extends Activity
 
 		Context mContext = this.getApplicationContext();
 		dbManager = new DBManager(mContext);
-		serverManager = new MyClient("127.0.0.1",3030);
+		serverManager = new MyClient(addr,3030);
 
 
 
@@ -196,8 +206,11 @@ public class MainActivity<dbManager> extends Activity
 		mRefreshButton = (Button)findViewById(R.id.button22);
         mListView = (ListView) findViewById(R.id.listView);
 
-		mFileNameText = (EditText)findViewById(R.id.fileNameText);
+		//mFileNameText = (EditText)findViewById(R.id.fileNameText);
+		mFileList = (Spinner)findViewById(R.id.fileNameSpinner);
+
 		mRequestFileButton = (Button)findViewById(R.id.requestButton);
+		SpinnerAdapter mFileListSpinnerAdapter = new ArrayAdapter<String>(getApplicationContext(),R.layout.listitem_file_list,itemList);
 
 
 
@@ -294,12 +307,31 @@ public class MainActivity<dbManager> extends Activity
 			public void onClick(View v) {
 				//v.setEnabled(false);
 				new Thread(() -> {
-					request(mFileNameText.getText().toString());
+					int select =mFileList.getSelectedItemPosition();
+					if(select != mFileList.INVALID_POSITION) request(itemList.get(select));
+					else{
+						Handler handler = new Handler(Looper.getMainLooper());
+						handler.postDelayed(new Runnable() {
+							@Override
+							public void run()
+							{
+								Toast.makeText(MainActivity.this, "There are no files to get on the server", Toast.LENGTH_SHORT).show();
+							}
+						}, 0);
+					}
 				}).start();
 				//v.setEnabled(true);
 			}
 		});
 
+		//mFileList.setAdapter(mFileListSpinnerAdapter);
+		mFileList.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View view, MotionEvent motionEvent) {
+				mFileList.setAdapter(mFileListSpinnerAdapter);
+				return false;
+			}
+		});
 		TedPermission.with(this)
 				.setPermissionListener(new PermissionListener() {
 					@Override
@@ -435,13 +467,24 @@ public class MainActivity<dbManager> extends Activity
 		}
 	}
 	void request(String fileName){
+		File fileDir = getFilesDir();
+		//"/data/user/0/com.logicsoft.myapplication30/files"
 		Handler handler = new Handler(Looper.getMainLooper());
-		if(serverManager.getFile(fileName)){
+		if(fileName=="None"){
 			handler.postDelayed(new Runnable() {
 				@Override
 				public void run()
 				{
-					Toast.makeText(MainActivity.this, "get " + fileName, Toast.LENGTH_SHORT).show();
+					Toast.makeText(MainActivity.this, "There are no files to get on the server", Toast.LENGTH_SHORT).show();
+				}
+			}, 0);
+		}
+		if(serverManager.getFile(fileName,fileDir)){
+			handler.postDelayed(new Runnable() {
+				@Override
+				public void run()
+				{
+					Toast.makeText(MainActivity.this, "getting " + fileName, Toast.LENGTH_SHORT).show();
 				}
 			}, 0);
 		}else{
@@ -517,6 +560,24 @@ public class MainActivity<dbManager> extends Activity
 
         mListView.setAdapter(new CustomArrayAdapter(ins,
                 R.layout.listitem_download, Titles));
+		new Thread(() -> {
+			itemList.clear();
+			List<String> returnList = serverManager.getList();
+			if(returnList.size()==0){
+				itemList.add("None");
+				Handler handler = new Handler(Looper.getMainLooper());
+				handler.postDelayed(new Runnable() {
+					@Override
+					public void run()
+					{
+						Toast.makeText(MainActivity.this, "There are no files to get on the server.\n Please click refresh button to refresh file list.", Toast.LENGTH_SHORT).show();
+					}
+				}, 0);
+			}
+			for(int i=0; i<returnList.size();i++){
+				itemList.add(returnList.get(i));
+			}
+		}).start();
     }
 
 	private List<String> getListFileNames(String strFolderName){
@@ -572,7 +633,7 @@ public class MainActivity<dbManager> extends Activity
 
 			Log.d(TAG, "new:" + position + " title: "+Titles.get(position).title );
 			if (Titles.get(position).title.equals("New"))
-			new MessageBox().show("알림", "동영상과 자막파일(영어, 한영통합)을 listeningPlayer1 폴더에 탑재하시요");
+				new MessageBox().show("알림", "동영상과 자막파일(영어, 한영통합)을 listeningPlayer1 폴더에 탑재하시요");
 
 			//show("mItemClickListner");
 			// show("file : " + file.getPath());

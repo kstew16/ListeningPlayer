@@ -16,13 +16,13 @@
 			android:layout_marginLeft="10dp"
 			android:layout_marginRight="10dp"
 			android:orientation="horizontal">
-			<EditText
-				android:id="@+id/fileNameText"
-				android:layout_height="wrap_content"
+			<Spinner
+				android:id="@+id/fileNameSpinner"
 				android:layout_width="300dp"
-				android:hint="input movie name"
-				/>
-			/>
+				android:layout_height="wrap_content"
+				android:spinnerMode="dropdown"
+				android:autofillHints="click refresh to get files" />
+
 			<Button
 				android:id="@+id/requestButton"
 				android:layout_width="wrap_content"
