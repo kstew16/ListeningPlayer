@@ -15,6 +15,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,6 +28,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -33,7 +36,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
-
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 
@@ -62,6 +64,7 @@ public class MainActivity<dbManager> extends Activity
 {
 
 	public static DBManager dbManager;
+	public static MyClient serverManager;
 
 
 	public static MainActivity ins;
@@ -89,6 +92,8 @@ public class MainActivity<dbManager> extends Activity
 	private ImageButton mButtonHelp;
 	private ImageButton mBackButton2;
 	private Button mRefreshButton;
+	private Button mRequestFileButton;
+	private EditText mFileNameText;
 
 
 	String[][] urls = new String[10][20];
@@ -171,6 +176,7 @@ public class MainActivity<dbManager> extends Activity
 
 		Context mContext = this.getApplicationContext();
 		dbManager = new DBManager(mContext);
+		serverManager = new MyClient("127.0.0.1",3030);
 
 
 
@@ -190,6 +196,10 @@ public class MainActivity<dbManager> extends Activity
 		mRefreshButton = (Button)findViewById(R.id.button22);
         mListView = (ListView) findViewById(R.id.listView);
 
+		mFileNameText = (EditText)findViewById(R.id.fileNameText);
+		mRequestFileButton = (Button)findViewById(R.id.requestButton);
+
+
 
 
 
@@ -197,6 +207,7 @@ public class MainActivity<dbManager> extends Activity
 
 
 		Log.d(TAG, "hello log");
+
 
 		Log.e(TAG, "hellp errors");
 
@@ -278,6 +289,17 @@ public class MainActivity<dbManager> extends Activity
             }
         });
 
+		mRequestFileButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				//v.setEnabled(false);
+				new Thread(() -> {
+					request(mFileNameText.getText().toString());
+				}).start();
+				//v.setEnabled(true);
+			}
+		});
+
 		TedPermission.with(this)
 				.setPermissionListener(new PermissionListener() {
 					@Override
@@ -337,16 +359,15 @@ public class MainActivity<dbManager> extends Activity
 						int index=0;
 
 						for (String x : a) {
-							String substring = x.substring(0, x.length() - 4);
 							if (x.endsWith("mp4")) {
 								Log.d(TAG, x.toString() + "zzz");
-								mp.add(substring);
-								keys.add(substring);
+								mp.add(x.substring(0, x.length() - 4));
+								keys.add(x.substring(0, x.length() - 4));
 								urls[1][index++] = x;
 							}
 							if (x.endsWith("avi")) {
-								avi.add(substring);
-								keys.add(substring);
+								avi.add(x.substring(0, x.length() - 4));
+								keys.add(x.substring(0, x.length() - 4));
 								urls[1][index++] = x;
 							}
 							if (x.endsWith("json")) {
@@ -355,7 +376,7 @@ public class MainActivity<dbManager> extends Activity
 							}
 							if (x.endsWith("smi")) {
 								Log.d(TAG, x.toString() + "smi file found");
-								smis.add(substring);
+								smis.add(x.substring(0, x.length() - 4));
 							}
 
 						}
@@ -384,11 +405,68 @@ public class MainActivity<dbManager> extends Activity
 
 	}
 
+	private File getSaveFolder(String folderName) {
+		Log.d(TAG, "path: "+Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + folderName);
+		File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +  "/"  + folderName);
+		if(!dir.exists()) {
+			Log.d(TAG, "파일 생성!!!");
+			dir.mkdirs();
+		}else{
+			Log.d(TAG, "파일 존재!!!");
+		}
+		return dir;
+	}
+	public static void copy(File src, File dst) throws IOException {
+		InputStream in = new FileInputStream(src);
+		try {
+			OutputStream out = new FileOutputStream(dst);
+			try {
+				// Transfer bytes from in to out
+				byte[] buf = new byte[1024];
+				int len;
+				while ((len = in.read(buf)) > 0) {
+					out.write(buf, 0, len);
+				}
+			} finally {
+				out.close();
+			}
+		} finally {
+			in.close();
+		}
+	}
+	void request(String fileName){
+		Handler handler = new Handler(Looper.getMainLooper());
+		if(serverManager.getFile(fileName)){
+			handler.postDelayed(new Runnable() {
+				@Override
+				public void run()
+				{
+					Toast.makeText(MainActivity.this, "get " + fileName, Toast.LENGTH_SHORT).show();
+				}
+			}, 0);
+		}else{
+			handler.postDelayed(new Runnable() {
+				@Override
+				public void run()
+				{
+					Toast.makeText(MainActivity.this, "failed to get " + fileName, Toast.LENGTH_SHORT).show();
+				}
+			}, 0);}
+	}
     void refresh() {
    //     Log.d(TAG, "good : " + v.toString());
+		Toast.makeText(getApplicationContext(), "folder name : " + getSaveFolder("listeningplayer").getAbsolutePath(), Toast.LENGTH_SHORT).show();
+		File src = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Movies");
+		File dst = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/listeningplayer");
+		try {
+			copy(src, dst);
+		} catch (IOException e) {
+			System.out.println (e.toString());
 
-        keys.clear();
-        //    Titles.add(new TitleList(Titles.size()+1, "KungFu_Panda3_Trailer")); //efore We Go Trailer"));
+		}
+
+
+		keys.clear();
         List<String> a = ins.FileList(prjName);
 
         int index=0;
@@ -396,7 +474,7 @@ public class MainActivity<dbManager> extends Activity
 
         for (String x : a) {
             if (x.endsWith("mp4")) {
-                Log.d(TAG, x.toString() + "zzz");
+                Log.d(TAG, "mp4: file: "+x.toString());
                 mp.add(x.substring(0, x.length() - 4));
                 keys.add(x.substring(0, x.length() - 4) );
                 urls[1][index++]=x;
@@ -408,11 +486,11 @@ public class MainActivity<dbManager> extends Activity
                 urls[1][index++] = x;
             }
             if (x.endsWith("json")) {
-                Log.d(TAG, x.toString() + "yyy");
+                Log.d(TAG, "mp4: file:"+ x.toString());
                 js.add(x.substring(0, x.length() - 5));
             }
             if (x.endsWith("smi")) {
-                Log.d(TAG, x.toString() + "smi file found");
+                Log.d(TAG, "smi file: "+x.toString());
                 smis.add(x.substring(0, x.length() - 4));
             }
 
@@ -441,32 +519,30 @@ public class MainActivity<dbManager> extends Activity
                 R.layout.listitem_download, Titles));
     }
 
+	private List<String> getListFileNames(String strFolderName){
+		String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + strFolderName;
+		File directory = new File(path);
+		File[] files = directory.listFiles();
 
+		List <String> filesNameList = new ArrayList<>();
+
+		for(int i = 0; i < files.length; i++){
+
+			filesNameList.add(files[i].getName());
+		}
+		return filesNameList;
+	}
     private List<String> FileList(String strFolderName)
     {
         String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).getPath();
-		String path2 = Environment.getExternalStorageDirectory().getPath()+"/ListeningPlayer1";
         Log.d(TAG, "good path: " + path);
         Log.d(TAG, "src folder: " + strFolderName);
 
         File directory = new File(path);
         File[] files = directory.listFiles();
 
-        List<String> filesNameList = new ArrayList<>();
-
-        for (int i=0; i< files.length; i++) {
-        	filesNameList.add(files[i].getName());
-        }
-
-		File directory2 = new File(path2);
-		File[] files2 = directory2.listFiles();
-
-		for (int i=0; i< files2.length; i++) {
-			filesNameList.add(files2[i].getName());
-		}
-
-		for (int i=0; i< files.length; i++) {
-			Log.d(TAG, "file name list: " + filesNameList.get(i));		}
+        List<String> filesNameList = getListFileNames("ListeningPlayer");
+		Log.d(TAG, "List Length: " + filesNameList.size());
 
 
         return  filesNameList;
@@ -482,6 +558,8 @@ public class MainActivity<dbManager> extends Activity
 	}
 	public OnItemClickListener mItemClickListener = new OnItemClickListener()
 	{
+
+
 		public void onItemClick(AdapterView<?> parent, View v, int position,
 				long id)
 		{
@@ -493,7 +571,8 @@ public class MainActivity<dbManager> extends Activity
 			Log.d(TAG, "onItemClick");
 
 			Log.d(TAG, "new:" + position + " title: "+Titles.get(position).title );
-			if (Titles.get(position).title.equals("New")) new MessageBox().show("알림", "동영상과 자막파일(영어, 한영통합)을 listeningPlayer1 폴더에 탑재하시요");
+			if (Titles.get(position).title.equals("New"))
+			new MessageBox().show("알림", "동영상과 자막파일(영어, 한영통합)을 listeningPlayer1 폴더에 탑재하시요");
 
 			//show("mItemClickListner");
 			// show("file : " + file.getPath());
@@ -555,8 +634,8 @@ public class MainActivity<dbManager> extends Activity
                 moveFile(MOVIE_SAVE_PATH + "/",  xx + ".smi", MOVIE_SAVE_PATH + "/" + "aaa" +"/");
                 refresh();
 
-				moveFile(MOVIE_SAVE_PATH.substring(0, 20) + "ListeningPlayer1/", xx+".json", MOVIE_SAVE_PATH + "/");
-				Log.d(TAG, "abc1" +  MOVIE_SAVE_PATH.substring(0, 20) + "ListeningPlayer1/" );
+				moveFile(MOVIE_SAVE_PATH.substring(0, 20) + "ListeningPlayer/", xx+".json", MOVIE_SAVE_PATH + "/");
+				Log.d(TAG, "abc1" +  MOVIE_SAVE_PATH.substring(0, 20) + "ListeningPlayer/" );
 				Log.d(TAG, "abc2" + xx+".json");
 				Log.d(TAG, "abc3" + MOVIE_SAVE_PATH) ;
 
@@ -1039,7 +1118,7 @@ public class MainActivity<dbManager> extends Activity
 	void createFile () {
 		try {
 			String rootPath = Environment.getExternalStorageDirectory()
-					.getAbsolutePath() + "/ListeningPlayer1/";
+					.getAbsolutePath() + "/ListeningPlayer/";
 			Log.d(TAG, "rootPath: " + rootPath);
 			File root = new File(rootPath);
 			if (!root.exists()) {

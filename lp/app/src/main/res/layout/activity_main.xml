@@ -3,20 +3,39 @@
     android:id="@+id/MainFrame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/listbackground2"
+
     tools:context=".MainActivity" >
 
-    <LinearLayout 
+    <LinearLayout
         android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
 	    android:orientation="vertical" >
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="10dp"
+			android:layout_marginRight="10dp"
+			android:orientation="horizontal">
+			<EditText
+				android:id="@+id/fileNameText"
+				android:layout_height="wrap_content"
+				android:layout_width="300dp"
+				android:hint="input movie name"
+				/>
+			/>
+			<Button
+				android:id="@+id/requestButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:text="get" />
+		</LinearLayout>
 	        <LinearLayout
 	        android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
 		    android:layout_marginLeft="10dp"
 		    android:layout_marginRight="10dp"
 		    android:orientation="horizontal">
-
 				<Button
 					android:id="@+id/Myvideo"
 					android:layout_width="match_parent"
@@ -27,16 +46,16 @@
 					android:textSize="20dp"
 					android:visibility="gone" />
 
-				<Button
-					android:id="@+id/Offervideo"
-					android:layout_width="277dp"
-					android:layout_height="50dp"
-					android:layout_marginLeft="10dp"
-					android:layout_weight="1"
-					android:background="#00000000"
-					android:text="제공 동영상"
-					android:textSize="20dp"
-					android:visibility="visible" />
+<!--				<Button-->
+<!--					android:id="@+id/Offervideo"-->
+<!--					android:layout_width="277dp"-->
+<!--					android:layout_height="50dp"-->
+<!--					android:layout_marginLeft="10dp"-->
+<!--					android:layout_weight="1"-->
+<!--					android:background="#00000000"-->
+<!--					android:text="제공 동영상"-->
+<!--					android:textSize="20dp"-->
+<!--					android:visibility="visible" />-->
 
 				<Button
 					android:id="@+id/button22"
@@ -46,15 +65,16 @@
 					android:text="refresh" />
 			</LinearLayout>
 
-	    <ListView
-	        android:id="@+id/listView"
-	        android:layout_marginLeft="15dp"
-	    	android:layout_marginRight="15dp"
-	        android:layout_width="match_parent"
-	        android:layout_height="match_parent"
-	        android:divider="#000000"
-	        android:dividerHeight="2dp" >
-	    </ListView>
+		<ListView
+			android:id="@+id/listView"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="15dp"
+			android:layout_marginRight="15dp"
+			android:divider="#000000"
+			android:dividerHeight="2dp">
+
+		</ListView>
     </LinearLayout>
 
 	<ImageButton
@@ -132,26 +152,27 @@
 	</LinearLayout>
 
 	<LinearLayout
-	    android:id="@+id/HelpMessage"
-	    android:orientation="vertical"
-	    android:layout_width="230dp"
-	    android:layout_height="350dp"
-	    android:layout_gravity="center"
-	    android:divider="#ffffffff"
-	    android:background="@drawable/helpmessage"
-	    tools:context=".MainActivity" >
-		<Button
-		    android:id="@+id/BackButton"
-		    android:layout_gravity="right"
-		    android:layout_width="50dp"
-		    android:layout_height="40dp"
-		    android:background="#00000000" />
-		<Button
-		    android:layout_width="fill_parent"
-		    android:layout_height="fill_parent"
-		    android:background="#00000000"	/>
-		</LinearLayout>
+		android:id="@+id/HelpMessage"
+		android:layout_width="230dp"
+		android:layout_height="350dp"
+		android:layout_gravity="center"
+		android:background="@drawable/helpmessage"
+		android:divider="#ffffffff"
+		android:orientation="vertical"
+		tools:context=".MainActivity">
 
+		<Button
+			android:id="@+id/BackButton"
+			android:layout_width="50dp"
+			android:layout_height="40dp"
+			android:layout_gravity="right"
+			android:background="#00000000" />
+
+		<Button
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:background="#00000000" />
+	</LinearLayout>
 
 
 </FrameLayout>

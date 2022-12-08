@@ -108,7 +108,7 @@ public class VideoActivity extends Activity implements OnGestureListener, OnDoub
 		mSubtitleLayout = (LinearLayout)findViewById(R.id.subtitleLayout);
 		
 		mGoStopLayout = (LinearLayout)findViewById(R.id.goStopLayout);
-		//mselectmode = (LinearLayout)findViewById(R.id.selectmode);
+		mselectmode = (LinearLayout)findViewById(R.id.selectmode);
 		mSettingMenu = (LinearLayout)findViewById(R.id.SettingMenu);
 		mSettingMenu.setVisibility(View.GONE);
 
@@ -440,7 +440,11 @@ public class VideoActivity extends Activity implements OnGestureListener, OnDoub
 		Log.e(TAG, "check and timered");
 	}
 	
-/*
+	/**
+	 * �뀓�뒪�듃酉곕�� �솕硫댁뿉 �룞�쟻�쑝濡� 異붽��떆�궓�떎.
+	 * �씠 �븣, 異붽��맂 �뀓�뒪�듃酉곕뒗 �옄�룞�쑝濡� �젙�젹�릺�뼱 �솕硫댁쓽 諛묒뿉�꽌遺��꽣 �뙎�씤�떎.
+	 * @return
+	 *//*
 	protected TextView addTextView() {
 		TextView textView = new TextView(this);
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams( LayoutParams.WRAP_CONTENT,
@@ -456,7 +460,11 @@ public class VideoActivity extends Activity implements OnGestureListener, OnDoub
 		
 		return textView;
 	}*/
-
+	
+	/**
+	 * �옄留됱쓣 泥댄겕�븯�뿬, 愿��젴�맂 紐⑤뱺 �옄留됱쓣 �씫�뼱�꽌 二쇱젣 媛앹껜(�옄留� �븯�굹)�� �샃��踰�(�룞�쟻�쑝濡� 異붽��맂 �뀓�뒪�듃 酉�)濡� �벑濡앺븳�떎.
+	 * @param path 鍮꾨뵒�삤 �뙆�씪�쓽 寃쎈줈
+	 */
 	private void checkSubtitles(String path) {
 	    Log.e(TAG, "check subtitles" + path);
 		mSubtitleList = SubtitleParser.parseAll(path);

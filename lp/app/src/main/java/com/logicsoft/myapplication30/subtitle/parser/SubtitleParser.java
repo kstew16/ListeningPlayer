@@ -186,8 +186,8 @@ public abstract class SubtitleParser {
 		for (File f : matchingFiles) {
 			if (f.isFile() && f.canRead()) {
 				SubtitleList sub = SubtitleParser.parse(f.getAbsolutePath());
-				//Log.d("sub", "sub hello" + sub.getSubtitle(0));
-				//Log.d("subtitle ", "subtitle : " + f.getAbsolutePath());
+				Log.d("sub", "sub hello" + sub.getSubtitle(0));
+				Log.d("subtitle ", "subtitle : " + f.getAbsolutePath());
 				if (sub != null)
 					subs.addSubtitles(sub);
 			}
