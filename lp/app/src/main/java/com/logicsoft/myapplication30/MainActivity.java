@@ -92,11 +92,12 @@ public class MainActivity<dbManager> extends Activity
     private Button mRequestFileButton;
     private Spinner mFileList;
     private ArrayList<String> itemList = new ArrayList<String>();
-    SpinnerAdapter mFileListSpinnerAdapter;
+    private SpinnerAdapter mFileListSpinnerAdapter;
 
 
     String[][] urls = new String[10][20];
     private ListView mListView = null;
+    private CustomArrayAdapter mListViewAdapter;
 
     private String subs[][] = {
             {
@@ -160,19 +161,19 @@ public class MainActivity<dbManager> extends Activity
         mBackButton2 = (ImageButton) findViewById(R.id.BackButton2);
         mButtonHelp = (ImageButton) findViewById(R.id.ButtonHelp);
         mRefreshButton = (Button) findViewById(R.id.button22);
+        mListViewAdapter = new CustomArrayAdapter(this, R.layout.listitem_download, Titles);
         mListView = (ListView) findViewById(R.id.listView);
 
         mFileList = (Spinner) findViewById(R.id.fileNameSpinner);
 
         mRequestFileButton = (Button) findViewById(R.id.requestButton);
-        SpinnerAdapter mFileListSpinnerAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.listitem_file_list, itemList);
+        mFileListSpinnerAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.listitem_file_list, itemList);
         Movie_Storage_Path = getFilesDir().getPath();
         ins = this;
 
         final Builder m = new AlertDialog.Builder(this);
 
-        mListView.setAdapter(new CustomArrayAdapter(this,
-                R.layout.listitem_download, Titles));
+        mListView.setAdapter(mListViewAdapter);
 
         mListView.setOnItemClickListener(mItemClickListener);
         mMyvideoButton.setOnClickListener(new OnClickListener() {
@@ -271,42 +272,6 @@ public class MainActivity<dbManager> extends Activity
 
                         mselectmode.setVisibility(View.GONE);
                         mHelpMessage.setVisibility(View.GONE);
-
-
-                        int index = 0;
-                        List<String> keys = new ArrayList<>();
-                        List<String> a = getListFileNames();
-                        for (String x : a) {
-                            if (x.endsWith("4")) {
-//                                Log.d(TAG, x.toString() + "zzz");
-                                mp.add(x.substring(0, x.length() - 4));
-                                keys.add(x.substring(0, x.length() - 4));
-                                urls[1][index++] = x;
-                            }
-                            else if (x.endsWith("avi")) {
-                                avi.add(x.substring(0, x.length() - 4));
-                                keys.add(x.substring(0, x.length() - 4));
-                                urls[1][index++] = x;
-                            }
-                            if (x.endsWith("json")) {
-//                                Log.d(TAG, x.toString() + "yyy");
-                                js.add(x.substring(0, x.length() - 5));
-                            }
-                            if (x.endsWith("smi")) {
-//                                Log.d(TAG, x.toString() + "smi file found");
-                                smis.add(x.substring(0, x.length() - 4));
-                            }
-                        }
-
-                        int ind = 0;
-
-                        for (String y : keys) {
-                            Titles.add(new TitleList(ind++, y));
-                        }
-                        Titles.add(new TitleList(ind++, "New"));
-                        urls[1][ind - 1] = "New";
-                        //     Titles.clear();
-
                     }
 
                     @Override
@@ -447,8 +412,8 @@ public class MainActivity<dbManager> extends Activity
         for (String y : keys) {
             Titles.add(new TitleList(ind++, y));
         }
-        mListView.setAdapter(new CustomArrayAdapter(ins,
-                R.layout.listitem_download, Titles));
+        mListView.setAdapter(mListViewAdapter);
+        mListViewAdapter.notifyDataSetChanged();
         new GetListThread(serverManager, itemList, MainActivity.this).start();
 
 //		new Thread(() -> {
