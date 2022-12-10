@@ -72,11 +72,11 @@ public class MainActivity<dbManager> extends Activity
     public static int playmode = 0;
     private static String TAG = "logicsoft";
 
-//    ArrayList<String> js = new ArrayList<>();
-//    ArrayList<String> mp = new ArrayList<>();
+    ArrayList<String> js = new ArrayList<>();
+    ArrayList<String> mp = new ArrayList<>();
 //    ArrayList<String> keys = new ArrayList<>();
-//    ArrayList<String> smis = new ArrayList<>();
-//    ArrayList<String> avi = new ArrayList<>();
+    ArrayList<String> smis = new ArrayList<>();
+    ArrayList<String> avi = new ArrayList<>();
 
 
     private LinearLayout mselectmode;
@@ -277,25 +277,25 @@ public class MainActivity<dbManager> extends Activity
                         List<String> keys = new ArrayList<>();
                         List<String> a = getListFileNames();
                         for (String x : a) {
-                            if (x.endsWith("mp4")) {
+                            if (x.endsWith("4")) {
 //                                Log.d(TAG, x.toString() + "zzz");
-//                                mp.add(x.substring(0, x.length() - 4));
+                                mp.add(x.substring(0, x.length() - 4));
                                 keys.add(x.substring(0, x.length() - 4));
                                 urls[1][index++] = x;
                             }
                             else if (x.endsWith("avi")) {
-//                                avi.add(x.substring(0, x.length() - 4));
+                                avi.add(x.substring(0, x.length() - 4));
                                 keys.add(x.substring(0, x.length() - 4));
                                 urls[1][index++] = x;
                             }
-//                            if (x.endsWith("json")) {
+                            if (x.endsWith("json")) {
 //                                Log.d(TAG, x.toString() + "yyy");
-//                                js.add(x.substring(0, x.length() - 5));
-//                            }
-//                            if (x.endsWith("smi")) {
+                                js.add(x.substring(0, x.length() - 5));
+                            }
+                            if (x.endsWith("smi")) {
 //                                Log.d(TAG, x.toString() + "smi file found");
-//                                smis.add(x.substring(0, x.length() - 4));
-//                            }
+                                smis.add(x.substring(0, x.length() - 4));
+                            }
                         }
 
                         int ind = 0;
@@ -418,23 +418,23 @@ public class MainActivity<dbManager> extends Activity
         for (String x : a) {
             if (x.endsWith("mp4")) {
                 Log.d(TAG, "mp4: file: " + x.toString());
-//                mp.add(x.substring(0, x.length() - 4));
+                mp.add(x.substring(0, x.length() - 4));
                 keys.add(x.substring(0, x.length() - 4));
                 urls[1][index++] = x;
 
             }
             else if (x.endsWith("avi")) {
-//                avi.add(x.substring(0, x.length() - 4));
+                avi.add(x.substring(0, x.length() - 4));
                 keys.add(x.substring(0, x.length() - 4));
                 urls[1][index++] = x;
             }
             else if (x.endsWith("json")) {
                 Log.d(TAG, "mp4: file:" + x.toString());
-//                js.add(x.substring(0, x.length() - 5));
+                js.add(x.substring(0, x.length() - 5));
             }
             else if (x.endsWith("smi")) {
                 Log.d(TAG, "smi file: " + x.toString());
-//                smis.add(x.substring(0, x.length() - 4));
+                smis.add(x.substring(0, x.length() - 4));
             }
 
         }
@@ -538,15 +538,15 @@ public class MainActivity<dbManager> extends Activity
 
 //            Log.d(TAG, "check: "+ js.contains(xx) + "size: " + js.size());
 
-//			if (js.contains(xx)) {
-//
-//				Intent intent = new Intent(MainActivity.this, VideoActivity.class);
-//				// intent.putExtra("path", mVideoList.get(position).getPath());
-//
-//
-//				intent.putExtra("path", file.getPath());
-//				startActivity(intent);
-//			}
+			if (js.contains(xx)) {
+
+				Intent intent = new Intent(MainActivity.this, VideoActivity.class);
+				// intent.putExtra("path", mVideoList.get(position).getPath());
+
+
+				intent.putExtra("path", file.getPath());
+				startActivity(intent);
+			}
 //			else if (!smis.contains(xx)){
 //
 //
