@@ -355,46 +355,52 @@ public class MainActivity<dbManager> extends Activity
         Log.d("JS", String.format("dst existing? " + dst.exists()));
     }
 
-    void request(String fileName) throws IOException {
-        File fileDir = getFilesDir();
-        //"/data/user/0/com.logicsoft.myapplication30/files"
+    void request(String fileName_no_extension) throws IOException {
+        String[] filenames = {
+                fileName_no_extension+".avi",
+                fileName_no_extension +".mp4",
+                fileName_no_extension+".json",
+                fileName_no_extension+".smi"};
+
         Handler handler = new Handler(Looper.getMainLooper());
-        if (fileName == "None") {
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(MainActivity.this, "There are no files to get on the server", Toast.LENGTH_SHORT).show();
-                }
-            }, 0);
-        }
-        List<byte[]> barrs = serverManager.getFile(fileName, fileDir);
-        if (barrs != null) {
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(MainActivity.this, "got " + fileName + "\n please refresh", Toast.LENGTH_SHORT).show();
-                }
-            }, 0);
-
-            FileOutputStream outputStream = getApplicationContext().openFileOutput(fileName, Context.MODE_PRIVATE);
-            Log.d("JS", "Downloading... " + fileName);
-            for (byte[] barr : barrs) {
-
-                outputStream.write(barr);
-                outputStream.flush();
+        for(String f: filenames){
+            if (f == "None") {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "There are no files to get on the server", Toast.LENGTH_SHORT).show();
+                    }
+                }, 0);
             }
-            outputStream.close();
-            String[] files = getApplicationContext().fileList();
-            Log.d("EW", files.toString());
+            List<byte[]> barrs = serverManager.getFile(f);
+            if (barrs != null) {
 
-        } else {
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(MainActivity.this, "failed to get " + fileName, Toast.LENGTH_SHORT).show();
+                FileOutputStream outputStream = getApplicationContext().openFileOutput(f, Context.MODE_PRIVATE);
+                Log.d("JS", "Downloading... " + f);
+                for (byte[] barr : barrs) {
+
+                    outputStream.write(barr);
+                    outputStream.flush();
                 }
-            }, 0);
+                outputStream.close();
+//                String[] files = getApplicationContext().fileList();
+//                Log.d("EW", files.toString());
+
+            } else {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "failed to get " + f, Toast.LENGTH_SHORT).show();
+                    }
+                }, 0);
+            }
         }
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, "got " + fileName_no_extension + "\n please refresh", Toast.LENGTH_SHORT).show();
+            }
+        }, 0);
     }
 
     void refresh() {
