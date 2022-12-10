@@ -51,6 +51,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -308,7 +309,13 @@ public class MainActivity<dbManager> extends Activity
 				//v.setEnabled(false);
 				new Thread(() -> {
 					int select =mFileList.getSelectedItemPosition();
-					if(select != mFileList.INVALID_POSITION) request(itemList.get(select));
+					if(select != mFileList.INVALID_POSITION) {
+						try {
+							request(itemList.get(select));
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
 					else{
 						Handler handler = new Handler(Looper.getMainLooper());
 						handler.postDelayed(new Runnable() {
@@ -466,7 +473,7 @@ public class MainActivity<dbManager> extends Activity
 			in.close();
 		}
 	}
-	void request(String fileName){
+	void request(String fileName) throws IOException {
 		File fileDir = getFilesDir();
 		//"/data/user/0/com.logicsoft.myapplication30/files"
 		Handler handler = new Handler(Looper.getMainLooper());
@@ -479,14 +486,25 @@ public class MainActivity<dbManager> extends Activity
 				}
 			}, 0);
 		}
-		if(serverManager.getFile(fileName,fileDir)){
+		byte[] barr = serverManager.getFile(fileName,fileDir);
+		if(barr!=null){
 			handler.postDelayed(new Runnable() {
 				@Override
 				public void run()
 				{
-					Toast.makeText(MainActivity.this, "getting " + fileName, Toast.LENGTH_SHORT).show();
+					Toast.makeText(MainActivity.this, "got " + fileName + "\n please refresh", Toast.LENGTH_SHORT).show();
 				}
 			}, 0);
+			//File dst = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/listeningplayer/" + fileName);
+			FileOutputStream outputStream = getApplicationContext().openFileOutput(fileName,Context.MODE_PRIVATE);
+			//getApplicationContext().openFileOutput(fileName, Context.MODE_PRIVATE).write(barr);
+			//getApplicationContext().openFileOutput(fileName, Context.MODE_PRIVATE).close();
+
+			outputStream.write(barr);
+			outputStream.close();
+			String[] files = getApplicationContext().fileList();
+			Log.d("EW",files.toString());
+
 		}else{
 			handler.postDelayed(new Runnable() {
 				@Override
@@ -501,6 +519,9 @@ public class MainActivity<dbManager> extends Activity
 		Toast.makeText(getApplicationContext(), "folder name : " + getSaveFolder("listeningplayer").getAbsolutePath(), Toast.LENGTH_SHORT).show();
 		File src = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Movies");
 		File dst = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/listeningplayer");
+		//File src = new File(Environment.getDataDirectory().getAbsolutePath());
+		//File dst = new File(Environment.getDataDirectory().getAbsolutePath());
+		//File src2 = new File(getApplicationContext().getFilesDir(),)
 		try {
 			copy(src, dst);
 		} catch (IOException e) {
@@ -511,7 +532,7 @@ public class MainActivity<dbManager> extends Activity
 
 		keys.clear();
         List<String> a = ins.FileList(prjName);
-
+		//src.listFiles()
         int index=0;
 
 

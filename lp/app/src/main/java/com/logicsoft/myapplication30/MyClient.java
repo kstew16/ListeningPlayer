@@ -51,8 +51,9 @@ public class MyClient extends Thread{
     }
 
 
-    public boolean getFile(String filename, File fileDir){
+    public byte[] getFile(String filename, File fileDir){
         final int SIZE = 1<<15;
+        byte[]barr = new byte[SIZE];
         try {
             // 1. connect
             connect(addr, portNum);
@@ -64,7 +65,7 @@ public class MyClient extends Thread{
             }
             write(b, 0, b.length);
 
-            byte[]barr = new byte[SIZE];
+
             // 3. open file stream
             int ret = 0;
             boolean isFirst = true;
@@ -78,7 +79,7 @@ public class MyClient extends Thread{
                     if(temp.startsWith("None")){
                         // Error!
                         //fbw.close(); // TODO
-                        return false;
+                        return null;
                     }
                 }
 
@@ -97,10 +98,10 @@ public class MyClient extends Thread{
             //fbw.close(); // TODO
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
 
-        return true;
+        return barr;
     }
 
     public void quitServer(){
