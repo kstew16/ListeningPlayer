@@ -1,6 +1,10 @@
 package com.logicsoft.myapplication30;
 
+import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,13 +17,16 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
+
 
 // client
 
 
-public class MyClient extends Thread{
+public class MyClient {
     Socket sck;
     private InputStream  is;
     private OutputStream os;
@@ -51,9 +58,11 @@ public class MyClient extends Thread{
     }
 
 
-    public byte[] getFile(String filename, File fileDir){
+    public List<byte[]> getFile(String filename, File fileDir){
+
         final int SIZE = 1<<15;
         byte[]barr = new byte[SIZE];
+        LinkedList<byte[]> byteBuilder = new LinkedList<>();
         try {
             // 1. connect
             connect(addr, portNum);
@@ -72,36 +81,30 @@ public class MyClient extends Thread{
             //OutputStream fos = new FileOutputStream(filename); // TODO
             //BufferedWriter fbw = new BufferedWriter(new FileWriter(fileDir + filename));
             // 5. reading message and write on file
-            while(ret>=0){
+            Log.d("JS", "get file thread");
+            while(true){
+                ret = read(barr,0,SIZE);
+                if (ret<0) break;
+                if (ret ==0) continue;
+
+//                Log.d("JS",new String(barr,0,ret, "UTF-8") );
+                byteBuilder.add(Arrays.copyOfRange(barr,0,ret));
                 if (isFirst){
                     isFirst=false;
                     String temp = new String(barr, 0, ret, "UTF-8");
                     if(temp.startsWith("None")){
-                        // Error!
-                        //fbw.close(); // TODO
                         return null;
                     }
                 }
 
-                if(ret !=0){
-                    Log.d("JS",new String(barr,0,ret, "UTF-8") );
-                    //fbw.write(barr, 0, ret); // TODO
-                    //fbw.write();
-                    //fbw.flush(); // TODO
-                }
-                // System.out.println(new String(barr,0,ret, "UTF-8"));
-
-                ret = read(barr,0,SIZE);
             }
 
-            // 6. close file stream
-            //fbw.close(); // TODO
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
 
-        return barr;
+        return byteBuilder;
     }
 
     public void quitServer(){
@@ -149,7 +152,7 @@ public class MyClient extends Thread{
 
                 if (ret != 0) {
                     String str = new String(barr, 0, ret, "UTF-8");
-                    Log.d("JS", str);
+//                    Log.d("JS", str);
                     sb.append(str);
                 }
 
@@ -167,19 +170,38 @@ public class MyClient extends Thread{
         return lst;
     }
 
-/*
-    @Override
-    public void run() {
-        Log.d("JS", "client started");
-        boolean ret = getFile("hello.txt","None");
-        if (ret){
-            Log.d("JS", "SUCCEEDED!");
-        }else{
-            Log.d("JS", "FAILED!");
-        }
 
+}
+
+class GetListThread extends Thread{
+
+    MyClient serverManager;
+    List<String> itemList;
+    Context mainact;
+    public GetListThread(MyClient serverMng, List<String> itemList, Context context){
+        this.serverManager = serverMng;
+        this.itemList = itemList;
+        mainact = context;
     }
 
- */
-
+    @Override
+    public void run(){
+        Log.d("JS", "get list thread run");
+        itemList.clear();
+        List<String> returnList = serverManager.getList();
+        if(returnList.size()==0){
+            itemList.add("None");
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run()
+                {
+                    Toast.makeText(mainact, "There are no files to get on the server.\n Please click refresh button to refresh file list.", Toast.LENGTH_SHORT).show();
+                }
+            }, 0);
+        }
+        for(int i=0; i<returnList.size();i++){
+            itemList.add(returnList.get(i));
+        }
+    }
 }
