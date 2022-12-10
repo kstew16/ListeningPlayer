@@ -316,8 +316,7 @@ public class MainActivity<dbManager> extends Activity
                 })
                 .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
                 .check();
-
-
+        refresh();
     }
 
     private File getSaveFolder(String folderName) {
