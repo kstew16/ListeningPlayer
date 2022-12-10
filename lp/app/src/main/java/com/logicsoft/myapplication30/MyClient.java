@@ -62,11 +62,11 @@ public class MyClient {
     }
 
 
-    public List<byte[]> getFile(String filename) {
+    public boolean getFile(String filename, FileOutputStream fos) {
 
         final int SIZE = 1 << 15;
         byte[] barr = new byte[SIZE];
-        LinkedList<byte[]> byteBuilder = new LinkedList<>();
+
         try {
             // 1. connect
             connect(addr, portNum);
@@ -82,8 +82,7 @@ public class MyClient {
             // 3. open file stream
             int ret = 0;
             boolean isFirst = true;
-            //OutputStream fos = new FileOutputStream(filename); // TODO
-            //BufferedWriter fbw = new BufferedWriter(new FileWriter(fileDir + filename));
+
             // 5. reading message and write on file
             Log.d("JS", "get file thread");
             while (true) {
@@ -92,23 +91,24 @@ public class MyClient {
                 if (ret == 0) continue;
 
 //                Log.d("JS",new String(barr,0,ret, "UTF-8") );
-                byteBuilder.add(Arrays.copyOfRange(barr, 0, ret));
                 if (isFirst) {
                     isFirst = false;
                     String temp = new String(barr, 0, ret, "UTF-8");
                     if (temp.startsWith("None")) {
-                        return null;
+                        return false;
                     }
                 }
+                fos.write(barr, 0, ret);
+                fos.flush();
 
             }
 
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
+            return false;
         }
 
-        return byteBuilder;
+        return true;
     }
 
     public void quitServer() {

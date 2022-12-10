@@ -363,6 +363,12 @@ public class MainActivity<dbManager> extends Activity
                 fileName_no_extension+".smi"};
 
         Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, "Downloading... ", Toast.LENGTH_LONG).show();
+            }
+        }, 0);
         for(String f: filenames){
             if (f == "None") {
                 handler.postDelayed(new Runnable() {
@@ -372,33 +378,28 @@ public class MainActivity<dbManager> extends Activity
                     }
                 }, 0);
             }
-            List<byte[]> barrs = serverManager.getFile(f);
-            if (barrs != null) {
-
-                FileOutputStream outputStream = getApplicationContext().openFileOutput(f, Context.MODE_PRIVATE);
-                Log.d("JS", "Downloading... " + f);
-                for (byte[] barr : barrs) {
-
-                    outputStream.write(barr);
-                    outputStream.flush();
+            FileOutputStream outputStream = getApplicationContext().openFileOutput(f, Context.MODE_PRIVATE);
+            boolean ret = serverManager.getFile(f, outputStream);
+            outputStream.flush();
+            outputStream.close();
+            if(!ret){
+                File del_file = new File(getFilesDir().getPath()+"/"+f);
+                if(del_file.exists()) {
+                    Log.d("JS", "File del");
+                    del_file.delete();
                 }
-                outputStream.close();
-//                String[] files = getApplicationContext().fileList();
-//                Log.d("EW", files.toString());
-
-            } else {
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(MainActivity.this, "failed to get " + f, Toast.LENGTH_SHORT).show();
-                    }
-                }, 0);
+//                handler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(MainActivity.this, "failed to get " + f, Toast.LENGTH_SHORT).show();
+//                    }
+//                }, 0);
             }
         }
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(MainActivity.this, "got " + fileName_no_extension + "\n please refresh", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "got " + fileName_no_extension + "\n please refresh", Toast.LENGTH_LONG).show();
             }
         }, 0);
     }
