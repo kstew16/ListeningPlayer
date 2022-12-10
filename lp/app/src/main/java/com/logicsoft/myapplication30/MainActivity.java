@@ -63,7 +63,7 @@ public class MainActivity<dbManager> extends Activity
 {
 
     public static DBManager dbManager;
-    public static String addr = "192.168.35.201";
+    public static String addr = "192.168.0.4";
     public static int pNum = 3030;
     public static MyClient serverManager;
 
@@ -365,7 +365,7 @@ public class MainActivity<dbManager> extends Activity
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(MainActivity.this, "Downloading... ", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "Downloading... ", Toast.LENGTH_SHORT).show();
             }
         }, 0);
         for(String f: filenames){
@@ -398,13 +398,13 @@ public class MainActivity<dbManager> extends Activity
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(MainActivity.this, "got " + fileName_no_extension + "\n please refresh", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "got " + fileName_no_extension, Toast.LENGTH_SHORT).show();
+                refresh();
             }
         }, 0);
     }
 
     void refresh() {
-        Toast.makeText(getApplicationContext(), "folder name : " + getSaveFolder("listeningplayer").getAbsolutePath(), Toast.LENGTH_SHORT).show();
 //		File src = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Movies");
 //		File dst = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/listeningplayer");
 

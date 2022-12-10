@@ -203,7 +203,7 @@ class GetListThread extends Thread {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(mainact, "There are no files to get on the server.\n Please click refresh button to refresh file list.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mainact, "There are no files to get on the server.", Toast.LENGTH_SHORT).show();
                 }
             }, 0);
         }
