@@ -586,7 +586,14 @@ public class VideoActivity extends Activity implements OnGestureListener, OnDoub
 
 	@Override
 	public boolean onDoubleTap(MotionEvent e) {
-		Toast.makeText(this, "더블클릭을 어따 써야할까...??", Toast.LENGTH_SHORT).show();
+		if(mExtra.getVisibility()==View.GONE){
+			Toast.makeText(this, "단어 뜻이 표시됩니다", Toast.LENGTH_SHORT).show();
+			mExtra.setVisibility(View.VISIBLE);
+		}
+		else{
+			Toast.makeText(this, "단어 뜻이 표시되지 않습니다.", Toast.LENGTH_SHORT).show();
+			mExtra.setVisibility(View.GONE);
+		}
 		return false;
 	}
 
