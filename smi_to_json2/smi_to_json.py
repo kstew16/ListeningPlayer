@@ -403,18 +403,23 @@ def convert_syncs_data(cursor, syncs_list):
     converted_syncs_list = []
 
     for i in range(len(syncs_list)):
-            
-        if(i != len(syncs_list)-1):
-            converted_syncs_list.append({"text": syncs_list[i]["text"],
-                                        "startTime": syncs_list[i]["startTime"],
-                                        "endTime": syncs_list[i+1]["startTime"],
-                                        "extras": get_extras_from_text(syncs_list[i]["text"], cursor)})
         
+        # 마지막 sync가 아니면    
+        if(i != len(syncs_list)-1):
+            # text가 공백이 아닐 경우에만
+            if(syncs_list[i]["text"] != ""):
+                converted_syncs_list.append({"text": syncs_list[i]["text"],
+                                            "startTime": syncs_list[i]["startTime"],
+                                            "endTime": syncs_list[i+1]["startTime"],
+                                            "extras": get_extras_from_text(syncs_list[i]["text"], cursor)})
+        # 마지막 sync 이면
         else:
-            converted_syncs_list.append({"text": syncs_list[i]["text"],
-                                        "startTime": syncs_list[i]["startTime"],
-                                        "endTime": 9223372036854775807,
-                                        "extras": get_extras_from_text(syncs_list[i]["text"], cursor)})
+            # text가 공백이 아닐 경우에만
+            if(syncs_list[i]["text"] != ""):
+                converted_syncs_list.append({"text": syncs_list[i]["text"],
+                                            "startTime": syncs_list[i]["startTime"],
+                                            "endTime": 9223372036854775807,
+                                            "extras": get_extras_from_text(syncs_list[i]["text"], cursor)})
                 
     return converted_syncs_list
 
