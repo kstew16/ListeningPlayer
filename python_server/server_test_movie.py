@@ -4,7 +4,7 @@ import socket
 from datetime import datetime
 import os
 
-MOVIE_STORAGE = r"E:\ITdbddmd_workspace\temp\movie_storage"
+MOVIE_STORAGE = r"C:\movie_stroage"
 def open_server_socket(host="localhost", port=2004):
     # Author: Jaesun Park (Univ. of Seoul)
     soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -38,7 +38,8 @@ def sendFileList(client:socket.socket):
 
 def main():
     # Author: Jaesun Park (Univ. of Seoul)
-    server = open_server_socket(host="192.168.35.201", port=3030)
+    server = open_server_socket(host=socket.gethostbyname(socket.gethostname()), port=3030)
+    print("서버 구동 중.. IP 주소 : " + socket.gethostbyname(socket.gethostname()))
     SIZE = 1<<15
     # server.settimeout(1.0)
     print("server ready")
