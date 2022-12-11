@@ -89,8 +89,8 @@ public class VideoActivity extends Activity implements OnGestureListener, OnDoub
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getActionBar().hide();
 		setContentView(R.layout.activity_video);
-		// getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 		Log.e(TAG, "start video activity1");
 		VideoActivity.ins = this;
